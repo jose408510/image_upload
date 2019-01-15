@@ -29,6 +29,11 @@ function checkFileType(file,cb) {
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());  
     //mimetype
     const mimetype = filetypes.test(file.mimetype)
+    if(mimetype && extname) {
+        return cb(null, true);
+    }else {
+        cb("Error: Images Only") //err will be sent to the front end
+    }
 }
 
 app.set('view engine' ,'ejs')
@@ -43,8 +48,18 @@ app.post('/upload', (req,res) => {
                 msg: err
             })
         }else {
+            if(req.file == undefined){
+                res.render('index', {
+                msg: "Error: No file Selected"   
+                });
+            }else{
+                res.render('index', {
+                    msg: 'File Uploaded!',
+                    file: `uploads/${req.file.filename}` 
+                })
+            }
             console.log(req.file);
-            res.send('test')
+            res.send('test') //will be sent to the frontend 
         }
     })
 })
